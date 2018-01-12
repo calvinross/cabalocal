@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    password: cobar123
+    url: jdbc:mysql://127.0.0.1:3306/cobar?useSSL=false
+  jpa:
+    show-sql: true
+  resources:
+    static-locations: classpath:/static
+
+  #  hibernate:
+  #    naming:
+  #      physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+server:
+  port: 18080
+  context-path: /Cobar
+
+clouduri:
+   itemcompleteuri: http://brand.fugumobile.cn/q/cobarapi/order/update
+logging:
+  config:
+  file: log/cobar_system.log
+  level: error
