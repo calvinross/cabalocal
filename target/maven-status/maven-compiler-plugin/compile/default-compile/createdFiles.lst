@@ -5,6 +5,7 @@ com/ross53/cobar/repository/CompletedItemRepository.class
 com/ross53/cobar/enums/OrderStatus.class
 com/ross53/cobar/service/OrderDetailService.class
 com/ross53/cobar/domain/CompleteItem.class
+com/ross53/cobar/EntityWrapper/RedoOrderWrapper.class
 com/ross53/cobar/EntityWrapper/OrderInfoWrapper.class
 com/ross53/cobar/controller/TestController.class
 com/ross53/cobar/handle/ExceptionHandle.class
@@ -13,14 +14,22 @@ com/ross53/cobar/repository/PositionInfoRepository.class
 com/ross53/cobar/service/PositionInfoService.class
 com/ross53/cobar/repository/OrderInfoRepository.class
 com/ross53/cobar/domain/OrderDetail.class
+com/ross53/cobar/enums/GateStatus.class
+com/ross53/cobar/EntityWrapper/OrderGateWrapper.class
+com/ross53/cobar/controller/OrderGateController.class
 com/ross53/cobar/domain/Result.class
+com/ross53/cobar/enums/InfoCodeStatus.class
 com/ross53/cobar/repository/OrderDetailRepository.class
 com/ross53/cobar/controller/OrderInfoController.class
 com/ross53/cobar/EntityWrapper/CompleteItemWrapper.class
 com/ross53/cobar/enums/ItemStatus.class
+com/ross53/cobar/domain/OrderGate.class
+com/ross53/cobar/EntityWrapper/InfoCodeWrapper.class
 com/ross53/cobar/service/InfoCodeService.class
 com/ross53/cobar/domain/PositionInfo.class
 com/ross53/cobar/utils/ValidateUtil.class
+com/ross53/cobar/service/OrderGateService.class
+com/ross53/cobar/CobarApplication$Runner.class
 com/ross53/cobar/controller/InfoCodeController.class
 com/ross53/cobar/aspect/ClientIpValidate.class
 com/ross53/cobar/domain/OrderInfo.class
@@ -30,5 +39,6 @@ com/ross53/cobar/CobarApplication.class
 com/ross53/cobar/repository/InfoCodeRepository.class
 com/ross53/cobar/enums/ResultEnum.class
 com/ross53/cobar/EntityWrapper/PositionWrapper.class
+com/ross53/cobar/repository/OrderGateRepository.class
 com/ross53/cobar/exception/SignatureValidateFailedException.class
 com/ross53/cobar/controller/PositionInfoController.class

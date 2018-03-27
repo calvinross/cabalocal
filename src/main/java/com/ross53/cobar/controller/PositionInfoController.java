@@ -51,7 +51,7 @@ public class PositionInfoController {
 
         PositionInfo psInfo = positionInfoService.getPositionByOrderNumberItemId(orderNumber,itemId);
 
-        if(psInfo != null) {
+        if(psInfo != null && psInfo.getPositionType() != 999) {
             psInfo.setPositionStatus(1);
             return ResultUtil.successful(psInfo);
         }else {

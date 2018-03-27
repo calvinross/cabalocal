@@ -20,4 +20,7 @@ public interface OrderInfoRepository extends JpaRepository<OrderInfo,Integer>{
 
     @Query("SELECT o FROM OrderInfo o WHERE o.orderNumber = :orderNumber")
     OrderInfo findByOrderNumber(@Param("orderNumber")String orderNumber);
+
+    @Query("SELECT o FROM OrderInfo o ORDER BY o.creatTime DESC")
+    List<OrderInfo> findAllByOrderDateDesc();
 }

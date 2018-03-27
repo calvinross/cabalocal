@@ -5,6 +5,7 @@ public enum OrderStatus {
     START("START", 0),
     COOKING("COOKING", 1),
     COMPLETE("COMPLETE", 2),
+    FINISHED("FINISHED",3),
     ALL("ALL", 100);
 
     private String name;

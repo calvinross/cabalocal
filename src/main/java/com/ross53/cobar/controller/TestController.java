@@ -7,9 +7,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value = "/test")
+@RequestMapping(value = "/")
 public class TestController {
-    @RequestMapping("/home")
+    @RequestMapping("/")
     public ModelAndView index(Map<String,Object> map){
         map.put("name","calvin welcome...");
         System.out.println("comming sooo.....");

@@ -40,4 +40,15 @@ public class InfoCodeService {
         Integer codeStatus = 2; //2 means processed by Cloud;
         return infoCodeRepository.getInfoCodes(codeStatus);
     }
+
+    public boolean getUnprocessedCode(String code){
+
+         List<InfoCode> infoCodes = infoCodeRepository.getUnprocessedCode(code);
+
+         if(infoCodes.size()>0){
+             return true;
+         }else {
+             return false;
+         }
+    }
 }

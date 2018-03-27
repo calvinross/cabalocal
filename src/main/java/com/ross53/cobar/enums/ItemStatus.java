@@ -6,7 +6,8 @@ public enum ItemStatus {
     COMPLETED("1", 1),
     COMPLETEPART("2", 2),
     REJECT("3", 3),
-    UNKNOWERR("4", 4);
+    UNKNOWERR("4", 4),
+    FINISHED("5",5);
 
     private String name;
     private int index;

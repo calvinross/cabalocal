@@ -3,6 +3,7 @@ package com.ross53.cobar.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ross53.cobar.EntityWrapper.OrderInfoWrapper;
+import com.ross53.cobar.EntityWrapper.RedoOrderWrapper;
 import com.ross53.cobar.domain.*;
 import com.ross53.cobar.enums.ItemStatus;
 import com.ross53.cobar.enums.OrderStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +55,7 @@ public class OrderInfoController {
     @GetMapping(value = "/List")
     public ModelAndView getOrderInfoList(Map<String,Object> map){
 
-        List<OrderInfo> orderInfos = orderInfoService.findAll();
+        List<OrderInfo> orderInfos = orderInfoService.findAllByOrderDateDesc();
         map.put("orderInfo",orderInfos);
 
         return  new ModelAndView("/orderinfo",map);
@@ -66,6 +68,10 @@ public class OrderInfoController {
     @GetMapping(value = "/Doing")
     public Result<OrderInfo> getStartOrderByASC(){
 
+        System.out.println("doing testing....");
+        OrderInfo orderInfoforCook = new OrderInfo();
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+
         try {
             List<OrderInfo> orderInfos = orderInfoService.findByOrderStatus(OrderStatus.START);
 
@@ -77,7 +83,19 @@ public class OrderInfoController {
 
                 orderInfoService.SaveOrderInfo(orderInfo);
 
+                for(OrderDetail orderDetail : orderInfo.getOrderDetail()){
+                    if(orderDetail.getItemStatus() == ItemStatus.UNDO){
+                        System.out.println("adding undo item into new list");
+                        orderDetailList.add(orderDetail);
+                    }
+                }
+
+                //orderInfoforCook.
+                System.out.println("return new order");
+                orderInfo.setOrderDetail(orderDetailList);
+
                 return ResultUtil.successful(orderInfo);
+                //return  ResultUtil.successful(orderInfoforCook);
 
             }else{
                 throw new Exception("there is no new orders for doing");
@@ -221,7 +239,7 @@ public class OrderInfoController {
                 od = d;
                 isCorrectItem = true;
             }
-            if (d.getItemStatus()  != ItemStatus.COMPLETED) {
+            if (d.getItemStatus() == ItemStatus.UNDO || d.getItemStatus() == ItemStatus.COMPLETEPART || d.getItemStatus() == ItemStatus.REJECT) {
                 orderStatus = false;
             }
         }
@@ -273,13 +291,112 @@ public class OrderInfoController {
 
         ResponseEntity<String> resp= restTemplate.postForEntity(uri, request, String.class);
 
+
         if (resp.getStatusCode() != HttpStatus.OK) {
             logger.error("requestError: complete response body is:" + resp.getBody());
             return ResultUtil.failled(-1,"Item Complete Update Failed;");
         }
 
+        completeItem.setItemStatus(ItemStatus.FINISHED.getIndex());
+        completedItemService.saveCompletetedItem(completeItem);
+
+        boolean orderFinishStatus = true;
+        for (OrderDetail d : orderInfo.getOrderDetail()) {
+            if (!completeItem.getItemId().equals(d.getItemId())) {
+                if (d.getItemStatus() != ItemStatus.FINISHED) {
+                    orderFinishStatus = false;
+                }
+            }else {
+                d.setItemStatus(ItemStatus.FINISHED);
+                orderDetailService.saveOrderDetail(d);
+            }
+        }
+
+        if (orderFinishStatus) {
+            orderInfo.setStatus(OrderStatus.FINISHED);
+            orderInfoService.SaveOrderInfo(orderInfo);
+        }
+
         return ResultUtil.successful("Item Complete updated;");
     }
 
+
+
+    /**
+     * this api for lab view to return failed order
+     *
+     * */
+     @PostMapping(value = "/failOrder/{orderNumber}/{itemId}")
+     public Result<String> failOrderFromLabview(@PathVariable("orderNumber") String orderNumber,
+                                                      @PathVariable("itemId") Integer itemId) throws Exception{
+
+
+         //update order and order_detail
+         OrderInfo orderInfo = orderInfoService.findByOrderNumber(orderNumber);
+
+         if(orderInfo == null){
+             throw new Exception("not found this order,please check your orderNumber");
+         }
+
+         orderInfo.setStatus(OrderStatus.START);
+
+         orderInfoService.SaveOrderInfo(orderInfo);
+
+         return ResultUtil.successful("rollback, will redo this order!");
+     }
+
+     /**
+      * item redo
+      * */
+     @PostMapping(value = "itemRedo")
+     public Result<String> redoItem(@RequestBody final String redoOrderWrapper,
+                                    @RequestHeader(value = "signature") String signature,
+                                    @RequestHeader(value="timestamp") String timestamp){
+
+
+         try{
+
+             if(!ValidateUtil.validateSignature(signature,redoOrderWrapper.toString() + ";" + timestamp.toString())){
+                 throw new SignatureValidateFailedException(100, "signature validated failed");
+             }else {
+                 ObjectMapper m = new ObjectMapper();
+                 RedoOrderWrapper redoOrder = m.readValue(redoOrderWrapper, RedoOrderWrapper.class);
+
+                 OrderInfo orderInfo = orderInfoService.findByOrderNumber(redoOrder.orderID);
+
+                 OrderDetail orderDetail =null;
+                 CompleteItem completeItem = null;
+
+                 if(orderInfo != null)
+                 {
+                     for(Integer itemID : redoOrder.itemIDs)
+                     {
+                         for(OrderDetail od : orderInfo.getOrderDetail()) {
+                             if(od.getItemId() == itemID){
+                                 od.setItemStatus(ItemStatus.UNDO);
+                                 if(od.getCompleteCount() >0){
+                                     od.setCompleteCount(od.getCompleteCount() -1);
+                                 }
+                                 completeItem = completedItemService.getCompleteItemsbyItemId(itemID).get(0);
+                                 completeItem.setItemStatus(ItemStatus.UNDO.getIndex());
+
+                                 completedItemService.saveCompletetedItem(completeItem);
+                                 orderDetailService.saveOrderDetail(od);
+                             }
+                         }
+                     }
+                 }
+
+                 orderInfo.setStatus(OrderStatus.START);
+                 orderInfoService.SaveOrderInfo(orderInfo);
+
+                 return ResultUtil.successful("updated done");
+             }
+
+         }catch (Exception e){
+
+             return ResultUtil.failled(-1,e.getMessage());
+         }
+     }
 
 }

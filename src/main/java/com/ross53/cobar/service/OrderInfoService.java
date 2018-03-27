@@ -23,6 +23,10 @@ public class OrderInfoService {
         return orderInfoRepository.findAll();
     }
 
+    public List<OrderInfo> findAllByOrderDateDesc(){
+        return orderInfoRepository.findAllByOrderDateDesc();
+    }
+
     public OrderInfo findByOrderId(Integer orderId){
         return  orderInfoRepository.findByOrderId(orderId);
     }

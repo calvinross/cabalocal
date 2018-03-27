@@ -25,7 +25,7 @@ public class ClientIpValidate {
     private final List<String> clientIP = Arrays.asList("0:0:0:0:0:0:0:1","127.0.0.1","220.248.29.226",
                                                          "115.159.76.157","202.39.151.119","101.229.71.182",
                                                          "192.168.1.1","192.168.1.2","192.168.1.3","192.168.1.4","192.168.1.5",
-                                                         "192.168.1.250","58.211.230.143","116.233.58.69");
+                                                         "192.168.1.250","58.211.230.143","116.233.58.69","47.96.136.167");
 
     private final static Logger logger = LoggerFactory.getLogger(ClientIpValidate.class);
 
@@ -41,9 +41,9 @@ public class ClientIpValidate {
 
           Integer isValidateIp = 0;
           for(String temp : clientIP) {
-              //logger.info(temp);
+              logger.info(temp);
               if (ipAddress.equals(temp)) {
-                  //logger.info("ipAddress is {}", ipAddress);
+                  logger.info("ipAddress is {}", ipAddress);
                   isValidateIp = 1;
                   return;
               }
