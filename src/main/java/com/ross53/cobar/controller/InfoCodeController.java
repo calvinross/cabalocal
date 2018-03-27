@@ -53,6 +53,7 @@ public class InfoCodeController {
                 InfoCode infoCode = new InfoCode();
                 infoCode.setInfoCode(code);
                 infoCode.setInfoStatus(0);
+                infoCode = infoCodeService.saveInfoCode(infoCode);
 
                 List<InfoCode> infoCodes = new ArrayList<>();
                 infoCodes.add(infoCode);

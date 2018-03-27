@@ -46,6 +46,7 @@ public class InfoCodeService {
          List<InfoCode> infoCodes = infoCodeRepository.getUnprocessedCode(code);
 
          if(infoCodes.size()>0){
+             System.out.println(infoCodes.get(0).getInfoCode());
              return true;
          }else {
              return false;
